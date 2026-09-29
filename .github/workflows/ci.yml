@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # One checkout. go.mod requires the modules below this one by version,
+      # so a green run says the published dependencies are enough to build
+      # and test this commit.
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.27.1'
+          check-latest: true
+
+      - name: Formatting
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "gofmt would rewrite:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      # -count=1 defeats the test result cache; -coverpkg is needed because
+      # the suites live outside the packages they exercise.
+      - name: Test
+        run: go test -count=1 -coverpkg=./... ./...
+
+      # The exporters are fed from the runtime's fibers while the scrape and
+      # the flush read them from others.
+      - name: Race
+        run: go test -race -count=1 ./...

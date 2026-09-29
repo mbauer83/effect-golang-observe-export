@@ -3,9 +3,9 @@ package prometheus
 import (
 	"net/http"
 
+	"github.com/mbauer83/effect-golang-observe/metrics"
 	"github.com/mbauer83/effect-golang-web/web"
 	"github.com/mbauer83/effect-golang/effect"
-	"github.com/mbauer83/effect-golang-observe/metrics"
 )
 
 // Route is the exposition as a route on an effect-golang-web surface, so a

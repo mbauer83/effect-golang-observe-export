@@ -20,8 +20,8 @@ import (
 
 // collector is an OTLP/HTTP endpoint that keeps what it was sent.
 type collector struct {
-	mu    sync.Mutex
-	spans []*tracev1.Span
+	mu      sync.Mutex
+	spans   []*tracev1.Span
 	service string
 }
 
